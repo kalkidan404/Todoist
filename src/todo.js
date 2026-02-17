@@ -5,8 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const projectname = document.querySelector(".projecti");
   const adder = document.querySelector(".adder");
   const projectList = document.querySelector(".project-list");
-
-  // --- FUNCTION 1: ADD PROJECT TO UI ---
   const addProjectUI = (projectObj) => {
     const li = document.createElement("li");
     li.dataset.id = projectObj.id;
@@ -14,8 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const titleEl = document.createElement("h3");
     titleEl.textContent = projectObj.name;
     li.appendChild(titleEl);
-
-    // [All your existing input creations...]
     const todoTitle = document.createElement("input");
     todoTitle.placeholder = "Todo Title";
     const todoDesc = document.createElement("input");
@@ -35,7 +31,7 @@ removeprojectBtn.addEventListener("click", () => {
     const index = appState.projects.findIndex(p => p.id === projectObj.id);
     if (index !== -1) {
         appState.projects.splice(index, 1);
-        li.remove(); // Remove the UI element for the project
+        li.remove();
     }saveToDisk(appState);
   });
     addTodoBtn.addEventListener("click", () => {
@@ -46,26 +42,21 @@ removeprojectBtn.addEventListener("click", () => {
       if (!t) return;
 
       const newTodo = createlist(projectObj.id, t, d, p, dueDate);
-      addTodoUI(newTodo, todoContainer,projectObj); // Call the UI function
+      addTodoUI(newTodo, todoContainer,projectObj); 
       
       todoTitle.value = "";
       todoDesc.value = "";
     });
-
-    // IF DATA ALREADY HAS TODOS (FROM STORAGE), DRAW THEM NOW
     if (projectObj.todos) {
         projectObj.todos.forEach(todo => addTodoUI(todo, todoContainer,projectObj));
     }
   };
-
-  // --- FUNCTION 2: ADD TODO TO UI ---
   const addTodoUI = (todoObj, container,projectObj) => {
     const todoItem = document.createElement("div");
     const dlt = document.createElement("button");
     dlt.textContent = "dlt";
 
     const dot = document.createElement("span");
-    // [Your existing dot styling...]
     dot.style.width = "12px";
     dot.style.height = "12px";
     dot.style.borderRadius = "50%";
@@ -75,43 +66,29 @@ removeprojectBtn.addEventListener("click", () => {
 
     const text = document.createElement("span");
     text.innerHTML = `<strong>${todoObj.title}</strong> <br> ${todoObj.description}-${todoObj.dueDate}`;
-    
-    // Line-through check for saved state
     if (todoObj.completed) text.style.textDecoration = "line-through";
 
     todoItem.append(dot, text,dlt);
     container.appendChild(todoItem);
-
-    // YOUR EXISTING DELETE & TOGGLE LOGIC
     dlt.addEventListener("click", () => { 
        const index = projectObj.todos.indexOf(todoObj);
         if (index !== -1) {
-            projectObj.todos.splice(index, 1); // Remove from array
-            saveToDisk(appState); // Update LocalStorage
+            projectObj.todos.splice(index, 1); 
+            saveToDisk(appState); 
             todoItem.remove();}});
     dot.addEventListener("click", () => {
         todoObj.completed = !todoObj.completed;
         text.style.textDecoration = todoObj.completed ? "line-through" : "none";
         saveToDisk(appState);
-        // Note: You should call a save function here to store the 'completed' state!
     });
   };
-
-  // --- THE ENGINE: RENDER EVERYTHING ON LOAD ---
-   projectList.innerHTML = ""; // <--- ADD THIS LINE HERE
+   projectList.innerHTML = ""; 
   appState.projects.forEach(proj => addProjectUI(proj));
-  
-
-  // YOUR EXISTING ADD PROJECT BUTTON
    adder.addEventListener("click", (e) => {
     e.preventDefault();
     const name = projectname.value.trim();
     if (!name) return;
-
-    // This adds to the array/storage
     const newProject = projects(name); 
-
-    // This draws it on the screen IMMEDIATELY
     addProjectUI(newProject);
     
     projectname.value = "";
